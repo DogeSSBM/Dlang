@@ -37,8 +37,3 @@ typedef int64_t			i64;
 #define ZFLOOR(n)			((n)<0?    0:(n))
 
 #define PI				M_PI
-
-int zfloor(const int n)
-{
-	return n < 0 ? 0 : n;
-}
