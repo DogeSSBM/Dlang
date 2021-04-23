@@ -120,6 +120,8 @@ char* getToken(char *buf, Token *token)
 		case '\0':
 			break;
 		default:
+			printf("Unexpected \"%c\"\n", *buf);
+			// exit(-1);
 			return buf+1;
 			break;
 	}
