@@ -96,7 +96,7 @@ char* getToken(char *buf, Token *token)
 				buf++;
 			}
 			printf("\tval: %s\n", token->ident_val);
-			return ++buf;
+			buf++;
 			break;
 		case '0'...'9':
 			printf("TT_INT_LITERAL\n");
@@ -106,7 +106,6 @@ char* getToken(char *buf, Token *token)
 				buf++;
 			}
 			printf("\tval: %u\n", token->int_val);
-			return buf;
 			break;
 		case 'a'... 'z':
 		case 'A'...'Z':
@@ -117,13 +116,12 @@ char* getToken(char *buf, Token *token)
 				buf++;
 			}
 			printf("\tval: %s\n", token->ident_val);
-			return buf;
 			break;
 		case '\0':
 		default:
 			break;
 	}
-	return buf;
+	return skipWhiteSpace(buf);
 }
 
 Token* tokenizeLine(char *buf)
@@ -136,12 +134,14 @@ Token* tokenizeLine(char *buf)
 	printf("Tokenizing line of len %2u\n", len);
 	Token *line = calloc(1, sizeof(Token));
 	Token *current = line;
-	uint i = 0;
-	while(1){
-		printf("Token count: %2u\n", ++i);
-		buf = getToken(buf, current);
-		if(*buf == '\0')
+	uint i = 1;
+	while(strlen(buf) != 0){
+		printf("Token count: %2u\n", i);
+		i++;
+		char* newbuf = getToken(buf, current);
+		if(*buf == '\0' || buf == newbuf)
 			return line;
+		buf = newbuf;
 		current->next = calloc(1, sizeof(Token));
 		current = current->next;
 	}
