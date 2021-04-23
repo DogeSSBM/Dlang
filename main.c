@@ -49,6 +49,12 @@ void fatal(char* message)
 	exit(1);
 }
 
+char* skipWhiteSpace(char* cur)
+{
+	while (*cur != ' ' && *cur != '\t' && *cur != '\n') cur ++;
+	return cur;
+}
+
 uint readLine(char *line)
 {
 	printf("Reading line...\n");
@@ -60,21 +66,14 @@ uint readLine(char *line)
 		len++;
 	}
 	printf("...read %2u char(s)\n", len);
+	line = skipWhiteSpace(line);
 	return len;
-}
-
-char* skipWhiteSpace(char* cur)
-{
-	while (*cur != ' ' && *cur != '\t' && *cur != '\n') cur ++;
-	return cur;
 }
 
 Token* appendTokens(Token *tokens, Token *more)
 {
 	if(tokens == NULL)
-		tokens = more;
-	if(more == NULL)
-		return NULL;
+		return more;
 	Token *current = tokens;
 	while(current->next != NULL)
 		current = current->next;
@@ -126,66 +125,75 @@ char* getToken(char *buf, Token *token)
 Token* tokenizeLine(char *buf)
 {
 	const uint len = strlen(buf);
+	if(len == 0){
+		printf("Line empty, skipping\n");
+		return NULL;
+	}
 	printf("Tokenizing line of len %2u\n", len);
 	Token *line = calloc(1, sizeof(Token));
 	Token *current = line;
-	int c;
-	while((c = *skipWhiteSpace(buf))!='\0'){
-		buf = getToken(buf, current);
-		if()
-	}
-}
-
-Token* tokenizeLine(Token *tokens, char *buf)
-{
-	const uint len = strlen(buf);
-	if(len)
-		return NULL;
-	Token *line = calloc(1, sizeof(Token));
-	if(tokens == NULL)
-
-	Token *current = line;
-	uint pos = 0;
+	uint i = 0;
 	while(1){
-		switch(buf[pos]){
-			case '"':
-				current->type = TT_STR_LITERAL;
-				while(*(++buf) != '"' && *buf != '\0'){
-					current->str_val[pos++] = *buf;
-				}
-				if(*buf == '\0')
-					fatal("Reached end of line with no closing '\"'\n");
-				pos = 0;
-				break;
-			case '0'...'9':
-				current->type = TT_INT_LITERAL;
-				while(*(++buf) >='0' && *buf <= '9' && *buf != '\0'){
-					current->str_val[pos++] = *buf;
-				}
-				current->int_val = strToInt(current->str_val);
-				pos = 0;
-				break;
-			case 'a'... 'z':
-			case 'A'...'Z':
-				current->type = TT_IDENT;
-				while(
-					((*(++buf) >='a' && *buf <= 'z') ||
-					(*buf >= 'A' && *buf <= 'Z')) &&
-					*buf != '\0'
-				){
-					current->ident_val[pos++] = *buf;
-				}
-				pos = 0;
-				break;
-			case '\0':
-				return line;
-				break;
-		}
+		printf("Token count: %2u\n", ++i);
+		buf = getToken(buf, current);
+		if(*buf == '\0')
+			return line;
 		current->next = calloc(1, sizeof(Token));
 		current = current->next;
 	}
-	return tokens;
+	return line;
 }
+
+// Token* tokenizeLine(Token *tokens, char *buf)
+// {
+// 	const uint len = strlen(buf);
+// 	if(len)
+// 		return NULL;
+// 	Token *line = calloc(1, sizeof(Token));
+// 	if(tokens == NULL) {}
+//
+// 	Token *current = line;
+// 	uint pos = 0;
+// 	while(1){
+// 		switch(buf[pos]){
+// 			case '"':
+// 				current->type = TT_STR_LITERAL;
+// 				while(*(++buf) != '"' && *buf != '\0'){
+// 					current->str_val[pos++] = *buf;
+// 				}
+// 				if(*buf == '\0')
+// 					fatal("Reached end of line with no closing '\"'\n");
+// 				pos = 0;
+// 				break;
+// 			case '0'...'9':
+// 				current->type = TT_INT_LITERAL;
+// 				while(*(++buf) >='0' && *buf <= '9' && *buf != '\0'){
+// 					current->str_val[pos++] = *buf;
+// 				}
+// 				current->int_val = strToInt(current->str_val);
+// 				pos = 0;
+// 				break;
+// 			case 'a'... 'z':
+// 			case 'A'...'Z':
+// 				current->type = TT_IDENT;
+// 				while(
+// 					((*(++buf) >='a' && *buf <= 'z') ||
+// 					(*buf >= 'A' && *buf <= 'Z')) &&
+// 					*buf != '\0'
+// 				){
+// 					current->ident_val[pos++] = *buf;
+// 				}
+// 				pos = 0;
+// 				break;
+// 			case '\0':
+// 				return line;
+// 				break;
+// 		}
+// 		current->next = calloc(1, sizeof(Token));
+// 		current = current->next;
+// 	}
+// 	return tokens;
+// }
 
 bool checkExit(Token *tokens)
 {
@@ -205,7 +213,7 @@ int main(int argc, char const *argv[])
 	while(!shellExit){
 		char buf[BUFSIZE] = {0};
 		if(readLine(buf) > 0)
-			appendTokens(tokens, tokenizeLine(tokens, buf));
+			tokens = appendTokens(tokens, tokenizeLine(buf));
 
 
 	}
