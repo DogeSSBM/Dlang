@@ -88,19 +88,22 @@ char* getToken(char *buf, Token *token)
 		case '"':
 			printf("TT_STR_LITERAL\n");
 			token->type = TT_STR_LITERAL;
-			while(*(++buf) != '"'){
+			buf++;
+			while(*buf != '"'){
 				if(*buf == '\0')
 					fatal("Reached end of line with no closing '\"'\n");
 				token->str_val[pos++] = *buf;
+				buf++;
 			}
 			printf("\tval: %s\n", token->ident_val);
-			return buf++;
+			return ++buf;
 			break;
 		case '0'...'9':
 			printf("TT_INT_LITERAL\n");
 			token->type = TT_INT_LITERAL;
-			while(*(buf++) >='0' && *buf <= '9'){
+			while(*buf >='0' && *buf <= '9'){
 				token->int_val = token->int_val*10+(*buf - '0');
+				buf++;
 			}
 			printf("\tval: %u\n", token->int_val);
 			return buf;
@@ -109,8 +112,9 @@ char* getToken(char *buf, Token *token)
 		case 'A'...'Z':
 			printf("TT_IDENT\n");
 			token->type = TT_IDENT;
-			while((*(++buf) >='a' && *buf <= 'z') || (*buf >= 'A' && *buf <= 'Z')){
+			while((*buf >='a' && *buf <= 'z') || (*buf >= 'A' && *buf <= 'Z')){
 				token->ident_val[pos++] = *buf;
+				buf++;
 			}
 			printf("\tval: %s\n", token->ident_val);
 			return buf;
