@@ -51,7 +51,7 @@ void fatal(char* message)
 
 char* skipWhiteSpace(char* cur)
 {
-	while (*cur != ' ' && *cur != '\t' && *cur != '\n') cur ++;
+	while (*cur == ' ' || *cur == '\t' || *cur == '\n') cur ++;
 	return cur;
 }
 
@@ -118,7 +118,9 @@ char* getToken(char *buf, Token *token)
 			printf("\tval: %s\n", token->ident_val);
 			break;
 		case '\0':
+			break;
 		default:
+			return buf+1;
 			break;
 	}
 	return skipWhiteSpace(buf);
@@ -139,7 +141,7 @@ Token* tokenizeLine(char *buf)
 		printf("Token count: %2u\n", i);
 		i++;
 		char* newbuf = getToken(buf, current);
-		if(*buf == '\0' || buf == newbuf)
+		if(buf == newbuf)
 			return line;
 		buf = newbuf;
 		current->next = calloc(1, sizeof(Token));
@@ -223,98 +225,3 @@ int main(int argc, char const *argv[])
 	}
 	return 0;
 }
-
-// bool tokenize_expression(char *buf, int *nskip, Token* first)
-// {
-// 	if(tokenize_strLiteral(buf, nskip, first)) return true;
-// 	if(tokenize_intLiteral(buf, nskip, first)) return true;
-// 	if(tokenize_identifier(buf, nskip, first)) return true;
-// 	return false;
-// }
-//
-// bool is_digit(char c)
-// {
-// 	return (c >= '0' && c <= '9');
-// }
-//
-// bool is_valid_ident(char c)
-// {
-// 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_digit(c);
-// }
-//
-// bool tokenize_strLiteral(char *buf, int* nskip, Token* first)
-// {
-// 	if (*buf == '"') {
-// 		char *cur = buf + 1;
-// 		// buf points at first character past opening quote
-// 		// (can be an ending quote too)
-// 		// iterate before end is reached
-// 		while (*cur != '"' && *cur != '\0') cur++;
-// 		if (*cur == '\0') fatal("unexpected end to string literal");
-//
-// 		if ((int)(cur - buf) > BUFSIZE) fatal("string literal too long");
-//
-// 		Token* newtok = (Token*) malloc(sizeof(Token));
-// 		newtok -> type = TT_STR_LITERAL;
-// 		memset(newtok->str_val, '\0', BUFSIZE * sizeof(char));
-// 		strncpy(newtok->str_val, buf + 1, (int)(cur - buf) - 1);
-// 		newtok->next = NULL;
-// 		appendTokens(first, newtok);
-//
-// 		*nskip = (int)(cur - buf);
-//
-// 		return true;
-// 	}
-// 	return false;
-// }
-//
-// bool tokenize_identifier(char *buf, int* nskip, Token* first)
-// {
-// 	if (is_valid_ident(*buf) && !is_digit(*buf)) {
-// 		char *cur = buf;
-// 		// buf points at first character past opening quote
-// 		// (can be an ending quote too)
-// 		// iterate before end is reached
-// 		while (is_valid_ident(*buf)) cur++;
-// 		if (*cur == '\0') fatal("unexpected end to string literal");
-//
-// 		if ((int)(cur - buf) > BUFSIZE) fatal("string literal too long");
-//
-// 		Token* newtok = (Token*) malloc(sizeof(Token));
-// 		newtok -> type = TT_STR_LITERAL;
-// 		memset(newtok->str_val, '\0', BUFSIZE * sizeof(char));
-// 		strncpy(newtok->str_val, buf + 1, (int)(cur - buf) - 1);
-// 		newtok->next = NULL;
-// 		appendTokens(first, newtok);
-//
-// 		*nskip = (int)(cur - buf);
-//
-// 		return true;
-// 	}
-// 	return false;
-// }
-//
-// bool tokenize_intLiteral(char *buf, int* nskip, Token* first)
-// {
-// 	if (is_digit(*buf) || *buf == '-') {
-// 		char* cur = buf;
-// 		char tempbuf[BUFSIZE];
-//
-// 		while (is_digit(*cur) && *cur != '\0') cur++;
-//
-// 		if ((int)(cur - buf) + 1 > BUFSIZE) fatal("string literal too long");
-// 		memset(tempbuf, '\0', BUFSIZE * sizeof(char));
-// 		strncpy(tempbuf, buf, (int)(cur - buf));
-//
-// 		Token* newtok = (Token*) malloc(sizeof(Token));
-// 		newtok -> type = TT_STR_LITERAL;
-// 		sscanf(tempbuf, "%d", &newtok->int_val);
-// 		newtok->next = NULL;
-// 		appendTokens(first, newtok);
-//
-// 		*nskip = (int)(cur - buf);
-//
-// 		return true;
-// 	}
-// 	return false;
-// }
